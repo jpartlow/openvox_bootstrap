@@ -26,6 +26,19 @@ jobs:
       - name: Run ShellCheck
         run: shellcheck -x tasks/*.sh files/*.sh
 
+  reference-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+      - name: Regenerate REFERENCE.md
+        run: bundle exec puppet strings generate --format markdown
+      - name: Check whether REFERENCE.md has uncommitted changes
+        run: git diff --exit-code REFERENCE.md
+
   test-install-task-on-ubuntu:
     strategy:
       matrix:
